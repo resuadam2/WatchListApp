@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,15 +26,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.resuadam2.watchlistapp.data.Platforms
+import com.resuadam2.watchlistapp.data.Watching
+import com.resuadam2.watchlistapp.data.WatchingTypes
+import com.resuadam2.watchlistapp.data.getPlatformColor
+import com.resuadam2.watchlistapp.ui.state.WatchingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(watchingListViewModel: WatchingListViewModel = WatchingListViewModel()) {
+    val watchingUiState by watchingListViewModel.watchingListState.collectAsState()
+
     Scaffold (
         topBar = {
             TopAppBar(title = {
@@ -54,31 +67,57 @@ fun MainScreen() {
                 )
             ) },
         floatingActionButton = { /* TODO */ }
-    ) { innerPadding ->
+    ) {
         // Content of the screen
-        BodyContent(modifier = Modifier.padding(innerPadding))
+        BodyContent(modifier = Modifier.padding(it), watchinSet = watchingUiState.watchingItems, watchingListViewModel = watchingListViewModel)
     }
 }
 
 @Composable
-fun BodyContent(modifier: Modifier = Modifier) {
+fun BodyContent(modifier: Modifier = Modifier, watchinSet: Set<Watching>, watchingListViewModel: WatchingListViewModel) {
     LazyColumn (
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(10) {
-            WatchListItem(modifier = modifier.fillMaxSize())
+        items(watchinSet.size) {
+            WatchListItem(
+                title = watchinSet.elementAt(it).title,
+                platform = watchinSet.elementAt(it).platform,
+                watchingType = watchinSet.elementAt(it).watchingType,
+                deleteItem = {
+                    watchingListViewModel.deleteWatching(watchinSet.elementAt(it))
+                }
+            )
         }
     }
 }
 
 @Composable
-fun WatchListItem(modifier: Modifier = Modifier, title: String = "Title", platform: String = "Platform", watchingType: String = "Type") {
+fun WatchListItem(
+    modifier: Modifier = Modifier,
+    title: String = "Title",
+    platform: Platforms = Platforms.OTHERS,
+    watchingType: WatchingTypes = WatchingTypes.SERIES,
+    deleteItem: () -> Unit
+) {
+    val showAlertDeleteMessage = remember { mutableStateOf(false) }
+
+    if (showAlertDeleteMessage.value) {
+        DeleteDialog(
+            title = "Deleting $title",
+            onConfirm = deleteItem,
+            showDeleteDialog = showAlertDeleteMessage
+        )
+    }
+
     Column (
         modifier = modifier
             .fillMaxSize()
-            .background(color = platformColor(platform))
+            .padding(8.dp)
+            .background(color = getPlatformColor(platform))
             .padding(16.dp)
             ,
         verticalArrangement = Arrangement.Center,
@@ -99,13 +138,15 @@ fun WatchListItem(modifier: Modifier = Modifier, title: String = "Title", platfo
             }
         }
         Row (
-            modifier = Modifier.padding(top = 8.dp).fillMaxSize(),
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(text = watchingType, style = MaterialTheme.typography.labelSmall)
-                Text(text = platform, style = MaterialTheme.typography.labelSmall)
+                Text(text = watchingType.toString(), style = MaterialTheme.typography.labelSmall)
+                Text(text = platform.toString(), style = MaterialTheme.typography.labelSmall)
             }
             Spacer(modifier = Modifier.size(32.dp))
             Row {
@@ -115,7 +156,9 @@ fun WatchListItem(modifier: Modifier = Modifier, title: String = "Title", platfo
                     Icon(Icons.Filled.Edit, contentDescription = "Edit")
                 }
                 IconButton(
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        showAlertDeleteMessage.value = true
+                    }
                 ) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete")
                 }
@@ -124,14 +167,36 @@ fun WatchListItem(modifier: Modifier = Modifier, title: String = "Title", platfo
     }
 }
 
-fun platformColor(platform: String): Color {
-    return when (platform) {
-        "NETFLIX" -> Color.Red
-        "MAX" -> Color.Blue
-        "PRIME" -> Color.Green
-        "DISNEY" -> Color.Yellow
-        else -> Color.Gray
-    }
+@Composable
+fun DeleteDialog(
+    title: String = "Delete",
+    message: String = "Are you sure you want to delete this item?",
+    onConfirm: () -> Unit,
+    showDeleteDialog: MutableState<Boolean>,
+) {
+
+    AlertDialog(
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            Button(onClick = {
+                onConfirm()
+                showDeleteDialog.value = false
+            }) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                showDeleteDialog.value = false
+            }) {
+                Text("Dismiss")
+            }
+        },
+        onDismissRequest = {
+             showDeleteDialog.value = false
+        }
+    )
 }
 
 @Preview(showBackground = true)
