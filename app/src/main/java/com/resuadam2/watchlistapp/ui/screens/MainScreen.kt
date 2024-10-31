@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -18,6 +20,8 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,11 +43,15 @@ import com.resuadam2.watchlistapp.data.Platforms
 import com.resuadam2.watchlistapp.data.Watching
 import com.resuadam2.watchlistapp.data.WatchingTypes
 import com.resuadam2.watchlistapp.data.getPlatformColor
+import com.resuadam2.watchlistapp.ui.navigation.AppScreens
 import com.resuadam2.watchlistapp.ui.state.WatchingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(watchingListViewModel: WatchingListViewModel = WatchingListViewModel()) {
+fun MainScreen(
+    watchingListViewModel: WatchingListViewModel = WatchingListViewModel(),
+    navigateToForm: () -> Unit
+) {
     val watchingUiState by watchingListViewModel.watchingListState.collectAsState()
 
     Scaffold (
@@ -66,7 +74,17 @@ fun MainScreen(watchingListViewModel: WatchingListViewModel = WatchingListViewMo
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) },
-        floatingActionButton = { /* TODO */ }
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navigateToForm()
+                },
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add")
+            }
+        }
     ) {
         // Content of the screen
         BodyContent(modifier = Modifier.padding(it), watchinSet = watchingUiState.watchingItems, watchingListViewModel = watchingListViewModel)
@@ -202,5 +220,5 @@ fun DeleteDialog(
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    MainScreen(navigateToForm = { /*TODO*/ })
 }
