@@ -2,7 +2,6 @@ package com.resuadam2.watchlistapp.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -14,13 +13,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.resuadam2.watchlistapp.data.WatchingTypes
 
 @Composable
 fun <T> EnumSpinner(
+    modifier: Modifier = Modifier,
     items: Array<T>,
+    label: String = "",
     selectedItem: T,
     onItemSelected: (T) -> Unit,
-    modifier: Modifier = Modifier
 ) where T : Enum<T>, T : EnumDisplayable {
     var expanded by remember { mutableStateOf(false) }
 
@@ -31,9 +33,9 @@ fun <T> EnumSpinner(
             onValueChange = {},
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = true },
+                .clickable { expanded = !expanded },
             readOnly = true,
-            label = { Text("Seleccione una opción") }
+            label = { Text(label.ifEmpty { "Seleccione una opción" }) }
         )
 
         // Menú desplegable
@@ -57,4 +59,22 @@ fun <T> EnumSpinner(
 // Interfaz que garantiza que el enum tiene una propiedad displayName
 interface EnumDisplayable {
     val displayName: String
+}
+
+/**
+ * Muestra un preview de EnumSpinner
+ * TODO No está funcionando el despliegue todavía
+ */
+@Preview
+@Composable
+fun EnumSpinnerPreview() {
+    val items = WatchingTypes.entries.toTypedArray()
+    var selectedItem by remember { mutableStateOf(WatchingTypes.FILM) }
+
+    EnumSpinner(
+        items = items,
+        label = "Esto es una prueba",
+        selectedItem = selectedItem,
+        onItemSelected = { selectedItem = it }
+    )
 }
