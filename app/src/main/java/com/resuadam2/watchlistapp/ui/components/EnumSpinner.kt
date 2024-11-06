@@ -1,5 +1,6 @@
 package com.resuadam2.watchlistapp.ui.components
 
+import android.util.Log
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -27,24 +28,23 @@ fun <T> EnumSpinner(
 ) where T : Enum<T>, T : EnumDisplayable {
     var expandedState by remember { mutableStateOf(false) }
 
+    /**
     // Usar un `LaunchedEffect` para loguear cuando cambie el estado de expandedState
     LaunchedEffect(expandedState) {
-        println("Estado expandedState: $expandedState")
+        Log.d("EnumSpinner", "expandedState: $expandedState")
     }
+    */
 
-    /**
-     * TODO: Comprobar que el OutlinedTextField no tape el ExposedDropDownMenuBox
-     * y por eso no se despliegue nada
-     */
     ExposedDropdownMenuBox (
         expanded = expandedState,
         onExpandedChange = {
-            println("Cambiando expandedState a: $it")
             expandedState = !expandedState
         }
     ) {
         // Visual del selector
+        // TODO: Cambiar a OutlinedTextField
         OutlinedTextField(
+            modifier = Modifier.menuAnchor(),
             value = selectedItem.displayName,
             onValueChange = {},
             readOnly = true,
@@ -75,10 +75,7 @@ interface EnumDisplayable {
     val displayName: String
 }
 
-/**
- * Muestra un preview de EnumSpinner
- * TODO No está funcionando el despliegue todavía
- */
+
 @Preview
 @Composable
 fun EnumSpinnerPreview() {

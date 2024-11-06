@@ -8,6 +8,9 @@
       <SelectionState runConfigName="EnumSpinnerPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="DropDownMenuDesplegado">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>
