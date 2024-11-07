@@ -8,7 +8,7 @@
       <SelectionState runConfigName="EnumSpinnerPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="DropDownMenuDesplegado">
+      <SelectionState runConfigName="FormItemScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

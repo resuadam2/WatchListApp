@@ -1,5 +1,9 @@
 package com.resuadam2.watchlistapp.ui.state
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.resuadam2.watchlistapp.data.Platforms
 import com.resuadam2.watchlistapp.data.WatchingTypes
@@ -13,20 +17,41 @@ class FormViewModel : ViewModel() {
     private val _formState = MutableStateFlow(FormState())
     val formState: StateFlow<FormState> = _formState.asStateFlow()
 
+    var currentTitle by mutableStateOf("")
+        private set
+
+    var currentPlatform by mutableStateOf(Platforms.OTHERS)
+        private set
+
+    var currentType by mutableStateOf(WatchingTypes.SERIES)
+        private set
+
     init {
         // Load form data
 
     }
 
-    fun onTitleChange(title: String) = _formState.update {
-        it.copy(title = title)
+    fun onTitleChange(title: String)  {
+        currentTitle = title
     }
 
-    fun onPlatformChange(platform: Platforms) = _formState.update {
-        it.copy(platform = platform)
+    fun onPlatformChange(platform: Platforms) {
+        currentPlatform = platform
     }
 
-    fun onTypeChange(type: WatchingTypes) = _formState.update {
-        it.copy(type = type)
+    fun onTypeChange(type: WatchingTypes) {
+        currentType = type
+    }
+
+    fun canSubmit(): Boolean = currentTitle.isNotBlank()
+
+    fun onSubmit() {
+        _formState.update {
+            it.copy(
+                title = currentTitle,
+                platform = currentPlatform,
+                type = currentType,
+            )
+        }
     }
 }

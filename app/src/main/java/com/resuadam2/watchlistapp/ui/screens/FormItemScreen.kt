@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -39,9 +40,15 @@ fun FormItemScreen(
     ) {
         Row {
             // ESTADO ACTUAL
-            Text("Current title: ${formItemUiState.title}")
-            Text("Current platform: ${formItemUiState.platform}")
-            Text("Current type: ${formItemUiState.type}")
+            Text("title: ${formItemUiState.title}")
+            Text("platform: ${formItemUiState.platform}")
+            Text("type: ${formItemUiState.type}")
+        }
+        Row {
+            // ESTADO ACTUAL
+            Text("Current title: ${formViewModel.currentTitle}")
+            Text("Current platform: ${formViewModel.currentPlatform}")
+            Text("Current type: ${formViewModel.currentType}")
         }
         // Add the form item screen here
        Row (
@@ -50,7 +57,7 @@ fun FormItemScreen(
            horizontalArrangement = Arrangement.SpaceBetween
        ) {
            OutlinedTextField(
-               value = formItemUiState.title,
+               value = formViewModel.currentTitle,
                onValueChange = { formViewModel.onTitleChange(it) },
                label = { Text("Title") },
                singleLine = true,
@@ -62,11 +69,10 @@ fun FormItemScreen(
            verticalAlignment = Alignment.CenterVertically,
            horizontalArrangement = Arrangement.SpaceBetween
        ){
-            /* TODO : Ni este desplegable ni el siguiente están funcinoando */
            EnumSpinner(
                items = WatchingTypes.entries.toTypedArray(),
                label = "Type",
-               selectedItem = formItemUiState.type,
+               selectedItem = formViewModel.currentType,
                onItemSelected = { formViewModel.onTypeChange(it) }
            )
        }
@@ -75,11 +81,10 @@ fun FormItemScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){
-
             EnumSpinner(
                 items = Platforms.entries.toTypedArray(),
                 label = "Platform",
-                selectedItem = formItemUiState.platform,
+                selectedItem = formViewModel.currentPlatform,
                 onItemSelected = { formViewModel.onPlatformChange(it) }
             )
         }
@@ -88,6 +93,17 @@ fun FormItemScreen(
         }
         Row {
             // Add the buttons here
+            Button(
+                onClick = { /* TODO */}
+            ) {
+                Text(text = "CANCEL")
+            }
+            Button(
+                onClick = { /* TODO */},
+                enabled = formViewModel.canSubmit()
+            ) {
+                Text(text = "CONFIRM")
+            }
         }
     }
 }
